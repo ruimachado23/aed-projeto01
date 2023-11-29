@@ -1,0 +1,50 @@
+void ImageBlur(Image img, int dx, int dy) { 
+  // Insert your code here!
+
+  Image tempImg = ImageCreate(img->width, img->height, img->maxval);
+
+  for(int i = 0; i < img->height; i++) {
+    for(int j = 0; j < img->width; j++) { // x,y são as coordenadas do meio do retangulo
+      int x1 = i - dx;
+      int y1 = j - dy;
+
+      int x2 = i + dx;
+      int y2 = j + dy;
+
+      if (x1 < 0) x1 = 0;
+      if (y1 < 0) y1 = 0;
+    
+      if(x2 >= img->width) x2 = img->width - 1;
+      if(y2 >= img->height) y2 = img->height - 1;
+
+      int sum = 0;
+
+      for(int x = x1; x <= x2; x++) {
+        for (int y = y1; y <= y2; y++) {
+          sum += ImageGetPixel(img, x, y);
+        }
+      }
+
+      int count = (x2 - x1 + 1) * (y2 - y1 + 1);
+      double blurredPixel =(double)sum/count;
+      uint8 blurredPixel_int = (uint8)blurredPixel;
+  
+      if (blurredPixel - blurredPixel_int >= 0.5) {
+        blurredPixel = blurredPixel_int + 1; 
+      }
+      else {
+        blurredPixel = blurredPixel_int;
+      }
+
+      ImageSetPixel(tempImg, i, j, blurredPixel);
+    }
+  }
+
+  for(int i = 0; i < img->height; i++) {
+    for(int j = 0; j < img->width; j++) {
+      img->pixel[i * img->width + j] = tempImg->pixel[i * tempImg->width + j];
+    }
+  }
+
+  ImageDestroy(&tempImg);
+} 
